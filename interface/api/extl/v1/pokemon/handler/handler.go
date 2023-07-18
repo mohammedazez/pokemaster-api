@@ -59,6 +59,22 @@ func (h *Handler) Insert(c echo.Context) error {
 	return c.JSON(http.StatusCreated, res)
 }
 
+func (h *Handler) CatchPokemon(c echo.Context) error {
+
+	result, err := h.service.CatchPokemon()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	resp := new(response.CatchPokemon)
+	resp.Probability = result.Probability
+	resp.Success = result.Success
+	resp.Information = result.Information
+
+	res := response.NewResponseCatchPokemon(http.StatusText(http.StatusAlreadyReported), resp, http.StatusAlreadyReported, true)
+	return c.JSON(http.StatusAlreadyReported, res)
+}
+
 func isPrime(n int) bool {
 	if n <= 1 {
 		return false

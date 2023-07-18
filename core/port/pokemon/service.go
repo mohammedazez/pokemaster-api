@@ -7,5 +7,6 @@ import (
 type (
 	Service interface {
 		Insert(form *domain.Pokemon) (domain.Pokemon, error)
+		CatchPokemon() (domain.CatchPokemon, error)
 	}
 )
