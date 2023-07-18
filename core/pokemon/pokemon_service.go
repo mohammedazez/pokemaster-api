@@ -2,7 +2,6 @@ package pokemon
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"math/rand"
 	domain "pokemaster-api/core/domain/pokemon"
@@ -60,14 +59,20 @@ func (s *Service) CatchPokemon() (domain.CatchPokemon, error) {
 func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
 	ctx := context.Background()
 
+	getPokemon, err := s.repo.GetPokemon(ctx, form.ID)
+	if err != nil {
+		log.Printf("Failed to get pokemon: %v", err)
+		return getPokemon, err
+	}
+
+	fibNum := getNumber(getPokemon.PokemonName)
+	form.PokemonName = form.PokemonName + "-" + fibNum
+
 	update, err := s.repo.UpdatePokemon(ctx, form)
 	if err != nil {
 		log.Printf("Failed to update pokemon: %v", err)
 		return update, err
 	}
-
-	fibNum := getNumber(form.PokemonName)
-	fmt.Println("fibNum", fibNum)
 
 	return update, nil
 }
@@ -89,14 +94,15 @@ func getNumber(name string) string {
 
 	filteredSlice := make([]int, 0)
 	for _, value := range fibSlice {
-
 		if value <= num && value >= 0 {
 			filteredSlice = append(filteredSlice, value)
 		}
-
 	}
 
-	sum := filteredSlice[len(filteredSlice)-1] + filteredSlice[len(filteredSlice)-2]
+	sum := 0
+	if len(filteredSlice) >= 2 {
+		sum = filteredSlice[len(filteredSlice)-1] + filteredSlice[len(filteredSlice)-2]
+	}
 	return strconv.Itoa(sum)
 }
 

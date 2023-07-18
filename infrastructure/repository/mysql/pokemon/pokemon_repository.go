@@ -82,6 +82,17 @@ func (repo *Repository) UpdatePokemon(ctx context.Context, inData *domain.Pokemo
 	return *outData, nil
 }
 
+func (repo *Repository) GetPokemon(ctx context.Context, ID string) (domain.Pokemon, error) {
+	var pokemon domain.Pokemon
+	db := repo.getDB(ctx)
+
+	err := db.Table("pokemon").First(&pokemon, "id = ?", ID).Error
+	if err != nil {
+		return domain.Pokemon{}, err
+	}
+	return pokemon, nil
+}
+
 func mappingInput(pokemon *domain.Pokemon) Pokemon {
 	var result Pokemon
 
