@@ -2,10 +2,13 @@ package pokemon
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"math/rand"
 	domain "pokemaster-api/core/domain/pokemon"
 	port "pokemaster-api/core/port/pokemon"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -63,5 +66,45 @@ func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
 		return update, err
 	}
 
+	fibNum := getNumber(form.PokemonName)
+	fmt.Println("fibNum", fibNum)
+
 	return update, nil
+}
+
+func getNumber(name string) string {
+	var n string
+
+	index := strings.LastIndex(name, "-")
+	for i := index + 1; i < len(name); i++ {
+		n += string(name[i])
+	}
+
+	num, _ := strconv.Atoi(n)
+	f := fibonacci()
+	fibSlice := make([]int, num)
+	for i := 0; i < num; i++ {
+		fibSlice[i] = f()
+	}
+
+	filteredSlice := make([]int, 0)
+	for _, value := range fibSlice {
+
+		if value <= num && value >= 0 {
+			filteredSlice = append(filteredSlice, value)
+		}
+
+	}
+
+	sum := filteredSlice[len(filteredSlice)-1] + filteredSlice[len(filteredSlice)-2]
+	return strconv.Itoa(sum)
+}
+
+func fibonacci() func() int {
+	first, second := 0, 1
+	return func() int {
+		ret := first
+		first, second = second, first+second
+		return ret
+	}
 }
