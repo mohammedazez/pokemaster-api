@@ -9,4 +9,10 @@ type (
 		CreatedAt      string
 		UpdatedAt      string
 	}
+
+	CatchPokemon struct {
+		Probability float32
+		Success     bool
+		Information string
+	}
 )
