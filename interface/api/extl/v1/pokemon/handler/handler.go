@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	port "pokemaster-api/core/port/pokemon"
+	"pokemaster-api/interface/api/common"
 	"pokemaster-api/interface/api/extl/v1/pokemon/request"
 	"pokemaster-api/interface/api/extl/v1/pokemon/response"
 	"pokemaster-api/interface/api/utils/validation"
@@ -44,18 +45,19 @@ func (h *Handler) Insert(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	rest := new(response.PrimeNumberCheck)
+	resp := new(response.PrimeNumberCheck)
 	if !isPrime(result.Number) {
-		rest.Result = "failure"
-		rest.Released = false
-		rest.PrimeNumber = result.Number
+		resp.Result = "failure"
+		resp.Released = false
+		resp.PrimeNumber = result.Number
 	} else {
-		rest.Result = "success"
-		rest.Released = true
-		rest.PrimeNumber = result.Number
+		resp.Result = "success"
+		resp.Released = true
+		resp.PrimeNumber = result.Number
 	}
 
-	res := response.NewResponseDetail(http.StatusText(http.StatusCreated), rest, http.StatusCreated, true)
+	res := new(common.DefaultResponse)
+	res.SetResponseData(http.StatusText(http.StatusOK), resp, http.StatusOK, true)
 	return c.JSON(http.StatusCreated, res)
 }
 
@@ -71,8 +73,40 @@ func (h *Handler) CatchPokemon(c echo.Context) error {
 	resp.Success = result.Success
 	resp.Information = result.Information
 
-	res := response.NewResponseCatchPokemon(http.StatusText(http.StatusAlreadyReported), resp, http.StatusAlreadyReported, true)
+	res := new(common.DefaultResponse)
+	res.SetResponseData(http.StatusText(http.StatusOK), resp, http.StatusOK, true)
 	return c.JSON(http.StatusAlreadyReported, res)
+}
+
+func (h *Handler) Update(c echo.Context) error {
+	req := new(request.RequestUpdate)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	errVal := validation.ValidateReq(req)
+	if errVal != nil {
+		return c.JSON(http.StatusBadRequest, errVal)
+	}
+
+	pokemon := new(domain.Pokemon)
+	pokemon.ID = c.Param("id")
+	pokemon.PokemonName = req.PokemonName
+
+	result, err := h.service.Update(pokemon)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	resp := new(response.UpdatePokemon)
+	resp.ID = result.ID
+	resp.PokemonName = result.PokemonName
+	resp.CreatedAt = result.CreatedAt
+	resp.UpdatedAt = result.UpdatedAt
+
+	res := new(common.DefaultResponse)
+	res.SetResponseData(http.StatusText(http.StatusOK), resp, http.StatusOK, true)
+	return c.JSON(http.StatusOK, res)
 }
 
 func isPrime(n int) bool {

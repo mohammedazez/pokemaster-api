@@ -2,6 +2,7 @@ package pokemon
 
 import (
 	"context"
+	"log"
 	"math/rand"
 	domain "pokemaster-api/core/domain/pokemon"
 	port "pokemaster-api/core/port/pokemon"
@@ -51,4 +52,16 @@ func (s *Service) CatchPokemon() (domain.CatchPokemon, error) {
 	}
 
 	return resp, nil
+}
+
+func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
+	ctx := context.Background()
+
+	update, err := s.repo.UpdatePokemon(ctx, form)
+	if err != nil {
+		log.Printf("Failed to update pokemon: %v", err)
+		return update, err
+	}
+
+	return update, nil
 }

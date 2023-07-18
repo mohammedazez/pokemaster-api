@@ -56,6 +56,32 @@ func (repo *Repository) InsertPokemon(ctx context.Context, inData *domain.Pokemo
 	return *outData, nil
 }
 
+func (repo *Repository) UpdatePokemon(ctx context.Context, inData *domain.Pokemon) (domain.Pokemon, error) {
+	pokemons := mappingInput(inData)
+
+	db := repo.getDB(ctx)
+	timeNow := time.Now()
+	pokemons.UpdatedAt = timeNow.String()
+
+	updates := map[string]interface{}{
+		"pokemon_name": pokemons.PokemonName,
+		"updated_at":   pokemons.UpdatedAt,
+	}
+
+	err := db.Model(&Pokemon{}).Where("id = ?", inData.ID).Updates(updates).Error
+	if err != nil {
+		return domain.Pokemon{}, err
+	}
+
+	outData := new(domain.Pokemon)
+	outData.ID = pokemons.ID
+	outData.PokemonName = pokemons.PokemonName
+	outData.CreatedAt = pokemons.CreatedAt
+	outData.UpdatedAt = pokemons.UpdatedAt
+
+	return *outData, nil
+}
+
 func mappingInput(pokemon *domain.Pokemon) Pokemon {
 	var result Pokemon
 

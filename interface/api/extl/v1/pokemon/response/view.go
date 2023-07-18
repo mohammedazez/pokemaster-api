@@ -1,9 +1,5 @@
 package response
 
-import (
-	"pokemaster-api/interface/api/common"
-)
-
 type (
 	Response struct {
 		ID             string `json:"id"`
@@ -25,26 +21,11 @@ type (
 		Probability float32 `json:"probability"`
 		Information string  `json:"information"`
 	}
+
+	UpdatePokemon struct {
+		ID          string `json:"id"`
+		PokemonName string `json:"pokemon_name"`
+		CreatedAt   string `json:"created_at"`
+		UpdatedAt   string `json:"updated_at"`
+	}
 )
-
-func NewResponseDetail(message string, res *PrimeNumberCheck, code int, status bool) *common.DefaultResponse {
-	data := new(PrimeNumberCheck)
-	data.Result = res.Result
-	data.Released = res.Released
-	data.PrimeNumber = res.PrimeNumber
-
-	responseData := new(common.DefaultResponse)
-	responseData.SetResponseData(message, data, code, status)
-	return responseData
-}
-
-func NewResponseCatchPokemon(message string, res *CatchPokemon, code int, status bool) *common.DefaultResponse {
-	data := new(CatchPokemon)
-	data.Probability = res.Probability
-	data.Success = res.Success
-	data.Information = res.Information
-
-	responseData := new(common.DefaultResponse)
-	responseData.SetResponseData(message, data, code, status)
-	return responseData
-}
