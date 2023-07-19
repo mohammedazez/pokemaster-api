@@ -109,6 +109,22 @@ func (h *Handler) Update(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
+func (h *Handler) List(c echo.Context) error {
+	req := new(request.RequestList)
+
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	results, err := h.service.List(req.PokemonName)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	res := response.NewResponseList(http.StatusText(http.StatusOK), results, http.StatusOK)
+	return c.JSON(http.StatusOK, res)
+}
+
 func isPrime(n int) bool {
 	if n <= 1 {
 		return false

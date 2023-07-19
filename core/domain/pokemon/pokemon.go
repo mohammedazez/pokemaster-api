@@ -6,6 +6,7 @@ type (
 		PokemonName    string
 		PokemonPicture string
 		Number         int
+		UserID         int
 		CreatedAt      string
 		UpdatedAt      string
 	}
