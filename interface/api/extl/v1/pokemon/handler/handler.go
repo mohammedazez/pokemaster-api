@@ -40,6 +40,7 @@ func (h *Handler) Insert(c echo.Context) error {
 	pokemon.PokemonName = req.PokemonName
 	pokemon.PokemonPicture = req.PokemonPicture
 	pokemon.Number = req.Number
+	pokemon.UserID = req.UserID
 
 	result, err := h.service.Insert(pokemon)
 	if err != nil {
@@ -114,7 +115,8 @@ func (h *Handler) List(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	results, err := h.service.List(req.PokemonName)
+	userID := c.QueryParam("user_id")
+	results, err := h.service.List(req.PokemonName, userID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

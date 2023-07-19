@@ -9,6 +9,6 @@ type (
 		Insert(form *domain.Pokemon) (domain.Pokemon, error)
 		CatchPokemon() (domain.CatchPokemon, error)
 		Update(form *domain.Pokemon) (domain.Pokemon, error)
-		List(pokemonName string) ([]domain.Pokemon, error)
+		List(pokemonName string, userID string) ([]domain.Pokemon, error)
 	}
 )
