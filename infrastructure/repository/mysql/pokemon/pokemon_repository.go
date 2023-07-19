@@ -20,7 +20,7 @@ type (
 		ID             string `gorm:"primaryKey;column:id"`
 		PokemonName    string `gorm:"column:pokemon_name"`
 		PokemonPicture string `gorm:"column:pokemon_picture"`
-		UserID         int    `gorm:"column:user_id"`
+		UserID         string `gorm:"column:user_id"`
 		PrimeNumber    int    `gorm:"column:prime_number"`
 		CreatedAt      string `gorm:"column:created_at"`
 		UpdatedAt      string `gorm:"column:updated_at"`
@@ -95,12 +95,16 @@ func (repo *Repository) GetPokemon(ctx context.Context, ID string) (domain.Pokem
 	return pokemon, nil
 }
 
-func (repo *Repository) GetAllListPokemon(pokemonName string) ([]domain.Pokemon, error) {
+func (repo *Repository) GetAllListPokemon(pokemonName string, userID string) ([]domain.Pokemon, error) {
 	pokemons := make([]Pokemon, 0)
 	query := repo.db.Table("pokemon")
 
 	if pokemonName != "" {
 		query = query.Where("pokemon_name LIKE ?", "%"+pokemonName+"%")
+	}
+
+	if userID != "" {
+		query = query.Where("user_id = ?", userID)
 	}
 
 	result := query.Find(&pokemons)
@@ -134,6 +138,7 @@ func mappingInput(pokemon *domain.Pokemon) Pokemon {
 	result.PokemonName = pokemon.PokemonName
 	result.PokemonPicture = pokemon.PokemonPicture
 	result.PrimeNumber = pokemon.Number
+	result.UserID = pokemon.UserID
 	result.CreatedAt = timeNow.String()
 
 	return result

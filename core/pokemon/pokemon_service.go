@@ -82,8 +82,8 @@ func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
 	return update, nil
 }
 
-func (s *Service) List(pokemonName string) ([]domain.Pokemon, error) {
-	pokemon, err := s.repo.GetAllListPokemon(pokemonName)
+func (s *Service) List(pokemonName string, userID string) ([]domain.Pokemon, error) {
+	pokemon, err := s.repo.GetAllListPokemon(pokemonName, userID)
 	if err != nil {
 		return nil, err
 	}
