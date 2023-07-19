@@ -2,9 +2,12 @@ package pokemon
 
 import (
 	"context"
+	"log"
 	"math/rand"
 	domain "pokemaster-api/core/domain/pokemon"
 	port "pokemaster-api/core/port/pokemon"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -51,4 +54,82 @@ func (s *Service) CatchPokemon() (domain.CatchPokemon, error) {
 	}
 
 	return resp, nil
+}
+
+func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
+	ctx := context.Background()
+
+	getPokemon, err := s.repo.GetPokemon(ctx, form.ID)
+	if err != nil {
+		log.Printf("Failed to get pokemon: %v", err)
+		return getPokemon, err
+	}
+
+	fibNum := getNumber(getPokemon.PokemonName)
+	form.PokemonName = form.PokemonName + "-" + fibNum
+
+	update, err := s.repo.UpdatePokemon(ctx, form)
+	if err != nil {
+		log.Printf("Failed to update pokemon: %v", err)
+		return update, err
+	}
+
+	return update, nil
+}
+
+func getNumber(name string) string {
+	var n string
+	var results string
+	index := strings.LastIndex(name, "-")
+
+	if index == -1 {
+		results = "0"
+	} else {
+		for i := index + 1; i < len(name); i++ {
+			n += string(name[i])
+		}
+
+		num, _ := strconv.Atoi(n)
+
+		f := fibonacci()
+		fibSlice := make([]int, num)
+		for i := 0; i < num; i++ {
+			fibSlice[i] = f()
+		}
+
+		filteredSlice := make([]int, 0)
+		for _, value := range fibSlice {
+			if value <= num && value >= 0 {
+				filteredSlice = append(filteredSlice, value)
+			}
+		}
+
+		if len(filteredSlice) >= 2 {
+			results = strconv.Itoa(filteredSlice[len(filteredSlice)-1] + filteredSlice[len(filteredSlice)-2])
+		}
+
+		switch num {
+		case 5:
+			results = strconv.Itoa(num + 3)
+		case 3:
+			results = strconv.Itoa(num + 2)
+		case 2:
+			results = strconv.Itoa(num + 1)
+		case 1:
+			results = strconv.Itoa(num + 1)
+		case 0:
+			results = strconv.Itoa(num + 1)
+		}
+	}
+
+	return results
+}
+
+func fibonacci() func() int {
+	first, second := 0, 1
+	return func() int {
+		ret := first
+		first, second = second, first+second
+		return ret
+	}
 }

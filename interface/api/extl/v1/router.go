@@ -43,5 +43,6 @@ func API(route *echo.Echo) {
 	pokemonV1 := v1Route.Group("/pokemon")
 	pokemonV1.POST("/release-pokemon", pokemonHandlerV1.Insert)
 	pokemonV1.GET("/catch-probability", pokemonHandlerV1.CatchPokemon)
+	pokemonV1.PUT("/rename-pokemon/:id", pokemonHandlerV1.Update)
 
 }
