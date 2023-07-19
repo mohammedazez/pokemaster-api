@@ -7,6 +7,7 @@ import (
 	"pokemaster-api/interface/api/extl/v1/pokemon/request"
 	"pokemaster-api/interface/api/extl/v1/pokemon/response"
 	"pokemaster-api/interface/api/utils/validation"
+	"strings"
 
 	domain "pokemaster-api/core/domain/pokemon"
 
@@ -42,19 +43,16 @@ func (h *Handler) Insert(c echo.Context) error {
 
 	result, err := h.service.Insert(pokemon)
 	if err != nil {
+		if strings.Contains(err.Error(), "number is not prime") {
+			return echo.NewHTTPError(http.StatusBadRequest, "number must be a prime number")
+		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	resp := new(response.PrimeNumberCheck)
-	if !isPrime(result.Number) {
-		resp.Result = "failure"
-		resp.Released = false
-		resp.PrimeNumber = result.Number
-	} else {
-		resp.Result = "success"
-		resp.Released = true
-		resp.PrimeNumber = result.Number
-	}
+	resp.Result = "success"
+	resp.Released = true
+	resp.PrimeNumber = result.Number
 
 	res := new(common.DefaultResponse)
 	res.SetResponseData(http.StatusText(http.StatusOK), resp, http.StatusOK, true)
@@ -123,18 +121,4 @@ func (h *Handler) List(c echo.Context) error {
 
 	res := response.NewResponseList(http.StatusText(http.StatusOK), results, http.StatusOK)
 	return c.JSON(http.StatusOK, res)
-}
-
-func isPrime(n int) bool {
-	if n <= 1 {
-		return false
-	}
-
-	for i := 2; i*i <= n; i++ {
-		if n%i == 0 {
-			return false
-		}
-	}
-
-	return true
 }

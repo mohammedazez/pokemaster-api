@@ -22,6 +22,7 @@ func NewResponseList(message string, data []domain.Pokemon, code int) *common.De
 		pokemon.PokemonPicture = val.PokemonPicture
 		pokemon.Number = val.Number
 		pokemon.UserID = val.UserID
+		pokemon.CreatedAt = val.CreatedAt
 		pokemon.UpdatedAt = val.UpdatedAt
 		pokemons = append(pokemons, pokemon)
 	}

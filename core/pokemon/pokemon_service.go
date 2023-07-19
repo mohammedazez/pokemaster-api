@@ -2,6 +2,7 @@ package pokemon
 
 import (
 	"context"
+	"errors"
 	"log"
 	"math/rand"
 	domain "pokemaster-api/core/domain/pokemon"
@@ -23,6 +24,10 @@ func NewService(repo port.Repository) port.Service {
 
 func (s *Service) Insert(form *domain.Pokemon) (domain.Pokemon, error) {
 	ctx := context.Background()
+
+	if !isPrime(form.Number) {
+		return domain.Pokemon{}, errors.New("number is not prime")
+	}
 
 	result, err := s.repo.InsertPokemon(ctx, form)
 	if err != nil {
@@ -84,6 +89,20 @@ func (s *Service) List(pokemonName string) ([]domain.Pokemon, error) {
 	}
 
 	return pokemon, nil
+}
+
+func isPrime(n int) bool {
+	if n <= 1 {
+		return false
+	}
+
+	for i := 2; i*i <= n; i++ {
+		if n%i == 0 {
+			return false
+		}
+	}
+
+	return true
 }
 
 func getNumber(name string) string {
