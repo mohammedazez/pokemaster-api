@@ -2,6 +2,7 @@ package pokemon
 
 import (
 	"context"
+	"errors"
 	domain "pokemaster-api/core/domain/pokemon"
 	"pokemaster-api/infrastructure/repository/mysql/transactor"
 	"time"
@@ -19,6 +20,7 @@ type (
 		ID             string `gorm:"primaryKey;column:id"`
 		PokemonName    string `gorm:"column:pokemon_name"`
 		PokemonPicture string `gorm:"column:pokemon_picture"`
+		UserID         int    `gorm:"column:user_id"`
 		PrimeNumber    int    `gorm:"column:prime_number"`
 		CreatedAt      string `gorm:"column:created_at"`
 		UpdatedAt      string `gorm:"column:updated_at"`
@@ -91,6 +93,35 @@ func (repo *Repository) GetPokemon(ctx context.Context, ID string) (domain.Pokem
 		return domain.Pokemon{}, err
 	}
 	return pokemon, nil
+}
+
+func (repo *Repository) GetAllListPokemon(pokemonName string) ([]domain.Pokemon, error) {
+	pokemons := make([]Pokemon, 0)
+	query := repo.db.Table("pokemon")
+
+	if pokemonName != "" {
+		query = query.Where("pokemon_name LIKE ?", "%"+pokemonName+"%")
+	}
+
+	result := query.Find(&pokemons)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		result.Error = nil
+	}
+
+	outData := make([]domain.Pokemon, 0)
+	for _, value := range pokemons {
+		var pokemon domain.Pokemon
+		pokemon.ID = value.ID
+		pokemon.PokemonName = value.PokemonName
+		pokemon.PokemonPicture = value.PokemonPicture
+		pokemon.UserID = value.UserID
+		pokemon.Number = value.PrimeNumber
+		pokemon.CreatedAt = value.CreatedAt
+		pokemon.UpdatedAt = value.UpdatedAt
+		outData = append(outData, pokemon)
+	}
+
+	return outData, nil
 }
 
 func mappingInput(pokemon *domain.Pokemon) Pokemon {

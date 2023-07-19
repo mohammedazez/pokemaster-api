@@ -44,5 +44,5 @@ func API(route *echo.Echo) {
 	pokemonV1.POST("/release-pokemon", pokemonHandlerV1.Insert)
 	pokemonV1.GET("/catch-probability", pokemonHandlerV1.CatchPokemon)
 	pokemonV1.PUT("/rename-pokemon/:id", pokemonHandlerV1.Update)
-
+	pokemonV1.GET("/list-pokemon", pokemonHandlerV1.List)
 }
