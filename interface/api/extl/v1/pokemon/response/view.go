@@ -6,7 +6,7 @@ type (
 		PokemonName    string `json:"pokemon_name"`
 		PokemonPicture string `json:"pokemon_picture"`
 		Number         int    `json:"number"`
-		UserID         int    `json:"user_id"`
+		UserID         string `json:"user_id"`
 		CreatedAt      string `json:"created_at"`
 		UpdatedAt      string `json:"updated_at"`
 	}
