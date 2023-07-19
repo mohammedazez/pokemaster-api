@@ -20,7 +20,7 @@ func main() {
 
 	// Start server
 	go func() {
-		if err := e.Start(":" + os.Getenv("APP_PORT_POKEMASTER")); err != nil {
+		if err := e.Start(":" + os.Getenv("PORT")); err != nil {
 			e.Logger.Info("Shutting down the server")
 		}
 	}()
