@@ -22,7 +22,12 @@ func main() {
 
 	// Start server
 	go func() {
-		if err := e.Start(":" + os.Getenv("PORT")); err != nil {
+		port := os.Getenv("PORT")
+		if port == "" {
+			port = "5000" // Default to port 5000 if PORT is not set
+		}
+
+		if err := e.Start(":" + port); err != nil {
 			e.Logger.Info("Shutting down the server")
 		}
 	}()
