@@ -60,7 +60,7 @@
   _Path Example_
 
   ```
-  https://services.app.com/pokemon-api/api/v1/pokemon/list-pokemon
+  https://pokemaster-af3f8e6d4ac3.herokuapp.com/api/v1/pokemon/list-pokemon
   ```
 
   _Response (200)_
@@ -131,7 +131,7 @@
   Also this rest api can search by pokemon name, example
 
   ```jso
-  http://localhost:8099/api/v1/pokemon/list-pokemon?pokemon_name=wobuffet
+  https://pokemaster-af3f8e6d4ac3.herokuapp.com/api/v1/pokemon/list-pokemon?pokemon_name=wobuffet
   ```
   
   
@@ -229,7 +229,7 @@
   _Path Example_
   
   ```
-  https://services.app.com/pokemon-api/api/v1/pokemon/rename-pokemon/d556e01d-422c-4022-a4ce-72e50630590f
+  https://pokemaster-af3f8e6d4ac3.herokuapp.com/api/v1/pokemon/rename-pokemon/d556e01d-422c-4022-a4ce-72e50630590f
   ```
   
   _Request Body_
