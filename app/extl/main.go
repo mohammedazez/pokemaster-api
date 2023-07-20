@@ -15,7 +15,9 @@ import (
 func main() {
 	config.LoadConfig()
 	e := echo.New()
-	e.Use(middleware.CORS())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+	}))
 
 	// route
 	routes.API(e)
