@@ -19,7 +19,7 @@
   _Path Example_
   
   ```
-  https://services.app.com/pokemon-api/api/v1/pokemon/catch-probability
+  https://services.app.com/pokemon-api/api/v1/pokemon/catch-probability](https://pokemaster-af3f8e6d4ac3.herokuapp.com/api/v1/pokemon/catch-probability
   ```
   
   _Response (208)_
