@@ -8,7 +8,6 @@ import (
 	domain "pokemaster-api/core/domain/pokemon"
 	port "pokemaster-api/core/port/pokemon"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -25,7 +24,15 @@ func NewService(repo port.Repository) port.Service {
 func (s *Service) Insert(form *domain.Pokemon) (domain.Pokemon, error) {
 	ctx := context.Background()
 
-	if !isPrime(form.Number) {
+	min := 1
+	max := 100
+	if min >= max {
+		panic("Invalid range: min must be less than max")
+	}
+	rand.Seed(time.Now().UnixNano())
+	randomNumber := rand.Intn(max-min+1) + min
+
+	if !isPrime(randomNumber) {
 		return domain.Pokemon{}, errors.New("number is not prime")
 	}
 
@@ -62,24 +69,34 @@ func (s *Service) CatchPokemon() (domain.CatchPokemon, error) {
 }
 
 func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
+	var pokemon domain.Pokemon
 	ctx := context.Background()
 
-	getPokemon, err := s.repo.GetPokemon(ctx, form.ID)
-	if err != nil {
-		log.Printf("Failed to get pokemon: %v", err)
-		return getPokemon, err
+	pokemon.RenameCounter++
+	fibNum := fibonacci(pokemon.RenameCounter)
+
+	renamedName := pokemon.PokemonName
+	if fibNum > 0 {
+		renamedName = pokemon.PokemonName + "-" + strconv.Itoa(fibNum)
 	}
 
-	fibNum := getNumber(getPokemon.PokemonName)
-	form.PokemonName = form.PokemonName + "-" + fibNum
-
+	form.PokemonName = renamedName
 	update, err := s.repo.UpdatePokemon(ctx, form)
 	if err != nil {
 		log.Printf("Failed to update pokemon: %v", err)
 		return update, err
 	}
 
-	return update, nil
+	return domain.Pokemon{}, nil
+}
+
+func fibonacci(n int) int {
+	if n <= 0 {
+		return 0
+	} else if n == 1 {
+		return 1
+	}
+	return fibonacci(n-1) + fibonacci(n-2)
 }
 
 func (s *Service) List(pokemonName string, userID string) ([]domain.Pokemon, error) {
@@ -103,61 +120,4 @@ func isPrime(n int) bool {
 	}
 
 	return true
-}
-
-func getNumber(name string) string {
-	var n string
-	var results string
-	index := strings.LastIndex(name, "-")
-
-	if index == -1 {
-		results = "0"
-	} else {
-		for i := index + 1; i < len(name); i++ {
-			n += string(name[i])
-		}
-
-		num, _ := strconv.Atoi(n)
-
-		f := fibonacci()
-		fibSlice := make([]int, num)
-		for i := 0; i < num; i++ {
-			fibSlice[i] = f()
-		}
-
-		filteredSlice := make([]int, 0)
-		for _, value := range fibSlice {
-			if value <= num && value >= 0 {
-				filteredSlice = append(filteredSlice, value)
-			}
-		}
-
-		if len(filteredSlice) >= 2 {
-			results = strconv.Itoa(filteredSlice[len(filteredSlice)-1] + filteredSlice[len(filteredSlice)-2])
-		}
-
-		switch num {
-		case 5:
-			results = strconv.Itoa(num + 3)
-		case 3:
-			results = strconv.Itoa(num + 2)
-		case 2:
-			results = strconv.Itoa(num + 1)
-		case 1:
-			results = strconv.Itoa(num + 1)
-		case 0:
-			results = strconv.Itoa(num + 1)
-		}
-	}
-
-	return results
-}
-
-func fibonacci() func() int {
-	first, second := 0, 1
-	return func() int {
-		ret := first
-		first, second = second, first+second
-		return ret
-	}
 }

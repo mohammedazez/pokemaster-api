@@ -39,7 +39,6 @@ func (h *Handler) Insert(c echo.Context) error {
 	pokemon := new(domain.Pokemon)
 	pokemon.PokemonName = req.PokemonName
 	pokemon.PokemonPicture = req.PokemonPicture
-	pokemon.Number = req.Number
 	pokemon.UserID = req.UserID
 
 	result, err := h.service.Insert(pokemon)
