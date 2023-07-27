@@ -8,6 +8,7 @@ import (
 	domain "pokemaster-api/core/domain/pokemon"
 	port "pokemaster-api/core/port/pokemon"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -81,25 +82,59 @@ func fibonacci(n int) int {
 	return fibonacci(n-1) + fibonacci(n-2)
 }
 
-func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
+func afters(n int) (after int) {
+	fib := make([]int, n+1)
+	fib[0], fib[1] = 0, 1
 
-	ctx := context.Background()
-	RenameCounter++
-	fibNum := fibonacci(RenameCounter)
-
-	renamedName := form.PokemonName
-	if fibNum >= 0 {
-		renamedName = form.PokemonName + "-" + strconv.Itoa(fibNum)
+	for i := 2; i <= n; i++ {
+		fib[i] = fib[i-1] + fib[i-2]
 	}
+	after = -1
+	for i := 0; i < len(fib); i++ {
+		if fib[i] == n {
+			if i < len(fib)-1 {
+				after = fib[i+1]
+			}
+			break
+		}
+	}
+	return after
+}
 
-	form.PokemonName = renamedName
+func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
+	ctx := context.Background()
+	getPokemon, err := s.repo.GetPokemon(ctx, form.ID)
+	if err != nil {
+		log.Printf("Failed to get pokemon: %v", err)
+		return getPokemon, err
+	}
+	var n string
+	index := strings.LastIndex(getPokemon.PokemonName, "-")
+	for i := index + 1; i < len(getPokemon.PokemonName); i++ {
+		n += string(getPokemon.PokemonName[i])
+	}
+	nInt, _ := strconv.Atoi(n)
+
+	if nInt <= 5 {
+		RenameCounter++
+		fibNum := fibonacci(RenameCounter)
+
+		renamedName := form.PokemonName
+		if fibNum >= 0 {
+			renamedName = form.PokemonName + "-" + strconv.Itoa(fibNum)
+		}
+		form.PokemonName = renamedName
+	} else {
+		after := afters(nInt)
+		form.PokemonName = form.PokemonName + "-" + strconv.Itoa(after)
+	}
 	update, err := s.repo.UpdatePokemon(ctx, form)
 	if err != nil {
 		log.Printf("Failed to update pokemon: %v", err)
 		return update, err
 	}
 
-	return domain.Pokemon{}, nil
+	return update, nil
 }
 
 func (s *Service) List(pokemonName string, userID string) ([]domain.Pokemon, error) {
