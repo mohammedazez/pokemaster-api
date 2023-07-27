@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+  app:
+    container_name: golang_container
+    environment:
+      - DB_POKEMASTER_USER=${DB_POKEMASTER_USER}
+      - DB_POKEMASTER_PASSWORD=${DB_POKEMASTER_PASSWORD}
+      - DB_POKEMASTER_name=${DB_POKEMASTER_DB}
+      - DB_POKEMASTER_HOST=${DB_POKEMASTER_ADDRESS}
+      - DB_POKEMASTER_PORT=${DB_POKEMASTER_PORT}
+    tty: true
+    build: .
+    ports:
+      - 8080:8080
+    restart: on-failure
+    volumes:
+      - .:/app
+    depends_on:
+      - mysql
+    networks:
+      - pokesmater
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql_container
+    environment:
+      - mysql_USER=${mysql_USER}
+      - mysql_PASSWORD=${mysql_PASSWORD}
+      - mysql_DB=${mysql_DB}
+      - DATABASE_HOST=${mysql_ADDRESS}
+    ports:
+      - "1234:5432"
+    networks:
+      - pokesmater
+
+# Networks to be created to facilitate communication between containers
+networks:
+  pokesmater:
+    driver: bridge
