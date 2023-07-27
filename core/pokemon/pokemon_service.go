@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+var (
+	RenameCounter = -1
+)
+
 type Service struct {
 	repo port.Repository
 }
@@ -68,16 +72,24 @@ func (s *Service) CatchPokemon() (domain.CatchPokemon, error) {
 	return resp, nil
 }
 
+func fibonacci(n int) int {
+	if n <= 0 {
+		return 0
+	} else if n == 1 {
+		return 1
+	}
+	return fibonacci(n-1) + fibonacci(n-2)
+}
+
 func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
-	var pokemon domain.Pokemon
+
 	ctx := context.Background()
+	RenameCounter++
+	fibNum := fibonacci(RenameCounter)
 
-	pokemon.RenameCounter++
-	fibNum := fibonacci(pokemon.RenameCounter)
-
-	renamedName := pokemon.PokemonName
-	if fibNum > 0 {
-		renamedName = pokemon.PokemonName + "-" + strconv.Itoa(fibNum)
+	renamedName := form.PokemonName
+	if fibNum >= 0 {
+		renamedName = form.PokemonName + "-" + strconv.Itoa(fibNum)
 	}
 
 	form.PokemonName = renamedName
@@ -88,15 +100,6 @@ func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
 	}
 
 	return domain.Pokemon{}, nil
-}
-
-func fibonacci(n int) int {
-	if n <= 0 {
-		return 0
-	} else if n == 1 {
-		return 1
-	}
-	return fibonacci(n-1) + fibonacci(n-2)
 }
 
 func (s *Service) List(pokemonName string, userID string) ([]domain.Pokemon, error) {

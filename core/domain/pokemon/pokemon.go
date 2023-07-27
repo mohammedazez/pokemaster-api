@@ -7,7 +7,6 @@ type (
 		PokemonPicture string
 		Number         int
 		UserID         string
-		RenameCounter  int
 		CreatedAt      string
 		UpdatedAt      string
 	}
