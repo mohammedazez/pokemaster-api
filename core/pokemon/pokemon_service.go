@@ -83,25 +83,6 @@ func fibonacci(n int) int {
 	return fibonacci(n-1) + fibonacci(n-2)
 }
 
-func afters(n int) (after int) {
-	fib := make([]int, n+1)
-	fib[0], fib[1] = 0, 1
-
-	for i := 2; i <= n; i++ {
-		fib[i] = fib[i-1] + fib[i-2]
-	}
-	after = -1
-	for i := 0; i < len(fib); i++ {
-		if fib[i] == n {
-			if i < len(fib)-1 {
-				after = fib[i+1]
-			}
-			break
-		}
-	}
-	return after
-}
-
 func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
 	ctx := context.Background()
 	getPokemon, err := s.repo.GetPokemon(ctx, form.ID)
@@ -163,4 +144,23 @@ func isPrime(n int) bool {
 	}
 
 	return true
+}
+
+func afters(n int) (after int) {
+	fib := make([]int, n+1)
+	fib[0], fib[1] = 0, 1
+
+	for i := 2; i <= n; i++ {
+		fib[i] = fib[i-1] + fib[i-2]
+	}
+	after = -1
+	for i := 0; i < len(fib); i++ {
+		if fib[i] == n {
+			if i < len(fib)-1 {
+				after = fib[i+1]
+			}
+			break
+		}
+	}
+	return after
 }
