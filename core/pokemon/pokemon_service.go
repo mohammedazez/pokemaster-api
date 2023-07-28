@@ -40,6 +40,7 @@ func (s *Service) Insert(form *domain.Pokemon) (domain.Pokemon, error) {
 	if !isPrime(randomNumber) {
 		return domain.Pokemon{}, errors.New("number is not prime")
 	}
+	form.Number = randomNumber
 
 	result, err := s.repo.InsertPokemon(ctx, form)
 	if err != nil {
@@ -114,6 +115,10 @@ func (s *Service) Update(form *domain.Pokemon) (domain.Pokemon, error) {
 		n += string(getPokemon.PokemonName[i])
 	}
 	nInt, _ := strconv.Atoi(n)
+
+	if index == -1 {
+		RenameCounter = -1
+	}
 
 	if nInt <= 5 {
 		RenameCounter++
